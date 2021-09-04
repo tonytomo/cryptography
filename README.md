@@ -1,6 +1,6 @@
 # Aplikasi Kriptografi dengan Golang
 
-_Aplikasi untuk dekripsi dan enkripsi chiper._
+_Aplikasi untuk dekripsi dan enkripsi cipher._
 
 ## Bahan
 
