@@ -1,9 +1,7 @@
 package main
 
 import (
-
-	// "fmt"
-
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -20,6 +18,10 @@ func main() {
 	})
 
 	var mw *walk.MainWindow
+
+	// plainText := "Ú×ÊáØÐØßÜ"
+	// vKey := "lmao"
+	// fmt.Println("Ext Vigenere E =", extVigCipherD(plainText, vKey))
 
 	if _, err := (MainWindow{
 		AssignTo: &mw,
@@ -59,30 +61,19 @@ func main() {
 					}
 				},
 			},
+			PushButton{
+				Text: "Extended Vigenere Cipher",
+				OnClicked: func() {
+					if _, err := RunExtVigDialog(mw); err != nil {
+						log.Print(err)
+					}
+				},
+			},
 		},
 	}.Run()); err != nil {
 		log.Fatal(err)
 	}
 }
-
-// func main() {
-// 	plainText := "fathoni satrio utomo"
-// 	shiftKey := 2
-// 	keyText := "ZEBRASCDFGHIJKLMNOPQTUVWXY"
-// 	vKey := "lmao"
-// 	a := 5
-// 	b := 8
-
-// 	fmt.Println("Plain text = ", strings.ReplaceAll(strings.ToUpper(plainText), " ", ""))
-// 	fmt.Println("Shift E = ", shiftCipherE(plainText, shiftKey))
-// 	fmt.Println("Shift D = ", shiftCipherD(shiftCipherE(plainText, shiftKey), shiftKey))
-// 	fmt.Println("Subs E = ", subsCipherE(plainText, keyText))
-// 	fmt.Println("Subs D = ", subsCipherD(subsCipherE(plainText, keyText), keyText))
-// 	fmt.Println("Affine E = ", affCipherE(plainText, a, b))
-// 	fmt.Println("Affine D = ", affCipherD(affCipherE(plainText, a, b), a, b))
-// 	fmt.Println("Vigenere E =", vigCipherE(plainText, vKey))
-// 	fmt.Println("Vigenere D =", vigCipherD(vigCipherE(plainText, vKey), vKey))
-// }
 
 var alfabet string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -207,15 +198,22 @@ func affCipherD(teks string, a int, b int) string {
 	result := strings.ToUpper(strings.ReplaceAll(teks, " ", ""))
 	length := len(result)
 	var index int
+	a_inv := 0
 	flag := false
+	for j := 0; j < 26; j++ {
+		if (a*j)%26 == 1 {
+			a_inv = j
+		}
+	}
 	for i := 0; i < length; i++ {
 		for j := 0; j < 26; j++ {
 			if rune(result[i]) == rune(alfabet[j]) {
-				dec := (26 - a) * (j - b)
+				dec := a_inv * (j - b)
 				index = (dec%26 + 26) % 26
 				if index < 0 {
 					index *= -1
 				}
+				fmt.Println(i, a_inv, dec, index)
 				j = 26
 				flag = true
 			}
@@ -308,6 +306,35 @@ func vigCipherD(teks string, key string) string {
 	return result
 }
 
+func extVigCipherE(teks string, key string) string {
+	var result string
+	newteks := strings.ToUpper(strings.ReplaceAll(teks, " ", ""))
+	newkey := strings.ToUpper(strings.ReplaceAll(key, " ", ""))
+	for i := 0; i < len(newteks); i++ {
+		c := int(newteks[i])
+		k := int(newkey[i%len(newkey)])
+		val := (c + k) % 256
+		result += string(rune(val))
+	}
+	return result
+}
+
+func extVigCipherD(teks string, key string) string {
+	var result string
+	newteks := strings.ToUpper(strings.ReplaceAll(teks, " ", ""))
+	newkey := strings.ToUpper(strings.ReplaceAll(key, " ", ""))
+	for i := 0; i < len(newteks); i++ {
+		c := int(newteks[i])
+		k := int(newkey[i%len(newkey)])
+		val := (c - k) % 256
+		result += string(rune(val))
+	}
+	return result
+}
+
+// ------------
+// DIALOG
+// ------------
 func RunShiftDialog(owner walk.Form) (int, error) {
 	var plainText, cipherText, key *walk.TextEdit
 
@@ -531,6 +558,56 @@ func RunVigDialog(owner walk.Form) (int, error) {
 						Text: "Dekripsi",
 						OnClicked: func() {
 							plainText.SetText(vigCipherD(strings.ToUpper(cipherText.Text()), key.Text()))
+						},
+					},
+				},
+			},
+		},
+	}.Run(owner)
+}
+
+func RunExtVigDialog(owner walk.Form) (int, error) {
+	var plainText, cipherText, key *walk.TextEdit
+
+	return Dialog{
+		Title:   "Extended Vigenere Cipher",
+		MinSize: Size{300, 300},
+		Layout:  VBox{},
+		Children: []Widget{
+			Label{
+				Text: "Plain text",
+			},
+			TextEdit{
+				AssignTo: &plainText,
+			},
+
+			Label{
+				Text: "Cipher text",
+			},
+			TextEdit{
+				AssignTo: &cipherText,
+			},
+
+			Label{
+				Text: "Key",
+			},
+			TextEdit{
+				AssignTo: &key,
+			},
+
+			Composite{
+				Layout: Grid{Columns: 2},
+				Children: []Widget{
+					PushButton{
+						Text: "Enkripsi",
+						OnClicked: func() {
+							cipherText.SetText(extVigCipherE(strings.ToUpper(plainText.Text()), key.Text()))
+						},
+					},
+					PushButton{
+						Text: "Dekripsi",
+						OnClicked: func() {
+							plainText.SetText(extVigCipherD(strings.ToUpper(cipherText.Text()), key.Text()))
 						},
 					},
 				},
