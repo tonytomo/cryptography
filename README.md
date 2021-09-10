@@ -29,9 +29,3 @@ rsrc -manifest test.manifest -o rsrc.syso
 ```
 3. Buka cmd, masuk ke direktori program
 4. Masukkan perintah `py gui.py`
-
-## Contributors
-
-1. [notyan](https://github.com/notyan)
-2. [vigosss12](https://github.com/vigosss12)
-3. [tonytomo](https://github.com/tonytomo)
