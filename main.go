@@ -61,14 +61,6 @@ func main() {
 					}
 				},
 			},
-			PushButton{
-				Text: "Extended Vigenere Cipher",
-				OnClicked: func() {
-					if _, err := RunExtVigDialog(mw); err != nil {
-						log.Print(err)
-					}
-				},
-			},
 		},
 	}.Run()); err != nil {
 		log.Fatal(err)
@@ -558,56 +550,6 @@ func RunVigDialog(owner walk.Form) (int, error) {
 						Text: "Dekripsi",
 						OnClicked: func() {
 							plainText.SetText(vigCipherD(strings.ToUpper(cipherText.Text()), key.Text()))
-						},
-					},
-				},
-			},
-		},
-	}.Run(owner)
-}
-
-func RunExtVigDialog(owner walk.Form) (int, error) {
-	var plainText, cipherText, key *walk.TextEdit
-
-	return Dialog{
-		Title:   "Extended Vigenere Cipher",
-		MinSize: Size{300, 300},
-		Layout:  VBox{},
-		Children: []Widget{
-			Label{
-				Text: "Plain text",
-			},
-			TextEdit{
-				AssignTo: &plainText,
-			},
-
-			Label{
-				Text: "Cipher text",
-			},
-			TextEdit{
-				AssignTo: &cipherText,
-			},
-
-			Label{
-				Text: "Key",
-			},
-			TextEdit{
-				AssignTo: &key,
-			},
-
-			Composite{
-				Layout: Grid{Columns: 2},
-				Children: []Widget{
-					PushButton{
-						Text: "Enkripsi",
-						OnClicked: func() {
-							cipherText.SetText(extVigCipherE(strings.ToUpper(plainText.Text()), key.Text()))
-						},
-					},
-					PushButton{
-						Text: "Dekripsi",
-						OnClicked: func() {
-							plainText.SetText(extVigCipherD(strings.ToUpper(cipherText.Text()), key.Text()))
 						},
 					},
 				},
